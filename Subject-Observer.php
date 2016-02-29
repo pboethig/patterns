@@ -15,9 +15,9 @@ interface IObserver
 }
 
 /**
- * Class AdobeCQAdapter
+ * Class AdobeCQObserver
  */
-class AdobeCQAdapter implements IObserver
+class AdobeCQObserver implements IObserver
 {
     public $_uuid;
 
@@ -33,9 +33,9 @@ class AdobeCQAdapter implements IObserver
 }
 
 /**
- * Class CumulusAdapter
+ * Class CumulusObserver
  */
-class CumulusAdapter implements IObserver
+class CumulusObserver implements IObserver
 {
     public $_uuid;
 
@@ -51,9 +51,9 @@ class CumulusAdapter implements IObserver
 }
 
 /**
- * Class MediaPoolAdapter
+ * Class MediaPoolObserver
  */
-class MediaPoolAdapter implements IObserver
+class MediaPoolObserver implements IObserver
 {
     public $_uuid;
 
@@ -73,7 +73,6 @@ class MediaPoolAdapter implements IObserver
  */
 class Observer implements SplObserver
 {
-
     /**
      * @var IObserver
      */
@@ -97,7 +96,7 @@ class Observer implements SplObserver
 /**
  * Class AssetSubject
  */
-class AssetStoragePublisher implements  SplSubject
+class AssetStorageSubject implements  SplSubject
 {
     /**
      * @var SplObjectStorage
@@ -118,7 +117,6 @@ class AssetStoragePublisher implements  SplSubject
 
         $this->_observers = new SplObjectStorage();
     }
-
 
     /**
      * Attaches Observer.
@@ -283,12 +281,12 @@ $fileObject2->setName('a long name2');
 
 
 //add fileobject to AssetPublisher
-$assetPublisher = new AssetStoragePublisher($fileObject2);
+$assetPublisher = new AssetStorageSubject($fileObject2);
 
 //create Observers who are interested on the  new asset
-$AdobeCQ = new Observer(new AdobeCQAdapter());
-$Cumulus = new Observer(new CumulusAdapter());
-$MediaPool = new Observer(new MediaPoolAdapter());
+$AdobeCQ = new Observer(new AdobeCQObserver());
+$Cumulus = new Observer(new CumulusObserver());
+$MediaPool = new Observer(new MediaPoolObserver());
 
 //register observers on assetpublisher
 $assetPublisher->attach($AdobeCQ);
@@ -297,4 +295,3 @@ $assetPublisher->attach($MediaPool);
 
 //publish new asset information
 $assetPublisher->notify();
-

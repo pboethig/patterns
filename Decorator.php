@@ -1,14 +1,7 @@
 <?php
-
-/**
- * Usage: If you want to
- */
-
-
 /**
  * Class FileObject
  */
-
 class FileObject
 {
 
@@ -119,20 +112,37 @@ class FileObject
     }
 }
 
+/**
+ * Add an interface to get the decorators consistent
+ *
+ * Interface Ipublisher
+ */
 interface Ipublisher
 {
     public function publish(FileObject $fileObject);
 }
 
+/**
+ * First class which executes the first required functionality
+ *
+ * Class CommonRepositoryPublisher
+ */
 class CommonRepositoryPublisher implements Ipublisher
 {
     public function publish(FileObject $fileObject)
     {
-        echo PHP_EOL .' => '.get_class($this) . ' => ' . __METHOD__ .' => ' . $fileObject->getName();
+        Logger::log(' => '.get_class($this) . ' => ' . __METHOD__ .' => ' . $fileObject->getName());
     }
 }
 
-
+/**
+ * Now the customer wants a change on the designed behavior.
+ * For that we create an abstract class, from which all further extensions can inherit
+ *
+ * This abstract class saves a decorating classobject and implements the same methods like the originally class
+ *
+ * Class CommonPublisherDecorator
+ */
 abstract class CommonPublisherDecorator implements Ipublisher
 {
     public $_publisher;
@@ -148,68 +158,104 @@ abstract class CommonPublisherDecorator implements Ipublisher
     }
 }
 
+/**
+ * Now we can extend the decorator to modify the originally object
+ *
+ * Class MarsRepositoryPublisher
+ */
 class MarsRepositoryPublisher extends CommonPublisherDecorator
 {
     public function publish(FileObject $fileObject)
     {
         $fileObject->setName($fileObject->getName(). '->Mars');
+
         $this->_publisher->publish($fileObject);
-        echo PHP_EOL .' => '.get_class($this->_publisher) . ' => ' . __METHOD__ .' => ' . $fileObject->getName();
+
+        Logger::log(' => ' . get_class($this->_publisher) . ' => ' . __METHOD__ . ' => ' . $fileObject->getName());
     }
 }
 
+/**
+ * Wen can even modify the modified object.
+ * Simply create a new instance with the previous decorator instance
+ *
+ * Class CummulusRepositoryPublisher
+ */
 class CummulusRepositoryPublisher extends CommonPublisherDecorator
 {
     public function publish(FileObject $fileObject)
     {
         $fileObject->setName($fileObject->getName().'->Cummulus');
+
         $this->_publisher->publish($fileObject);
-        echo PHP_EOL .' => '.get_class($this->_publisher) . ' => ' . __METHOD__ .' => ' . $fileObject->getName();
+
+        Logger::log(' => ' . get_class($this->_publisher) . ' => ' . __METHOD__ . ' => ' . $fileObject->getName());
     }
 }
 
+/**
+ * Another decorator
+ *
+ * Class AdobeRepositoryPublisher
+ */
 class AdobeRepositoryPublisher extends CommonPublisherDecorator
 {
     public function publish(FileObject $fileObject)
     {
         $fileObject->setName($fileObject->getName().'->Adobe');
+
         $this->_publisher->publish($fileObject);
-        echo PHP_EOL .' => '.get_class($this->_publisher) . ' => ' . __METHOD__ .' => ' . $fileObject->getName();
+
+        Logger::log(' => ' . get_class($this->_publisher) . ' => ' . __METHOD__ . ' => ' . $fileObject->getName());
     }
 }
 
-
+/**
+ * And so on...
+ *
+ * Class PictureParkRepositoryPublisher
+ */
 class PictureParkRepositoryPublisher extends CommonPublisherDecorator
 {
     public function publish(FileObject $fileObject)
     {
         $fileObject->setName($fileObject->getName().'->PicturePark');
-        $this->_publisher->publish($fileObject);
-        echo PHP_EOL .' => '.get_class($this->_publisher) . ' => ' . __METHOD__ .' => ' . $fileObject->getName();
 
+        $this->_publisher->publish($fileObject);
+
+        Logger::log(' => ' . get_class($this->_publisher) . ' => ' . __METHOD__ . ' => ' . $fileObject->getName());
     }
 }
 
+/**
+ * Class Logger
+ */
+class Logger
+{
+    public static function log(String $message)
+    {
+        echo $message . PHP_EOL;
+    }
+}
 
-
-
+//get an object to decorate
 $fileObject = new FileObject();
 $fileObject->setName("coolio_namus.pdf");
 
-//first undecorated publish
+//first process an undecorated object (originally designed functionality)
 $basePublisher = new CommonRepositoryPublisher();
 $basePublisher->publish($fileObject);
 
-//decorate the base published file
+//decorate the base object
 $picturePark = new PictureParkRepositoryPublisher($basePublisher);
 
-//Call decorator on last decorator
+//modoify the modified object
 $adobePublisher = new AdobeRepositoryPublisher($picturePark);
 
-//Call decorator on last decorator
+//adn so on
 $cummulusRepositoryPublisher = new CummulusRepositoryPublisher($adobePublisher);
 
-//Call decorator on last decorator
+//finally decorate the last decorator..
 $marsRepositoryPublisher = new MarsRepositoryPublisher($cummulusRepositoryPublisher);
 $marsRepositoryPublisher->publish($fileObject);
 

@@ -12,6 +12,12 @@ facadepattern:
 - hide complex api calls and logic behind a simply well structured fassade. So you can reduce complexity, increese performance in webservice apis an
   make developers feel lucky to have a fassade.
 
+Decoratorpattern:
+- use this pattern if you want to modify an object, message or other constructs dring runtime without to change the method itselfs.
+  You can setup a decoratorchain on wich you can modify the modified object again. But keep an eye on th first object. This passtern likes to change the 
+  base object! 
+
+
   
   
   

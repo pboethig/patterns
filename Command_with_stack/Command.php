@@ -76,9 +76,9 @@ interface IContentRepository
 }
 
 /**
- * Interface ICommandDataFassade
+ * Interface ICommandDataFacade
  */
-interface ICommandDataFassade
+interface ICommandDataFacade
 {
     /**
      * @return mixed
@@ -98,7 +98,7 @@ interface ICommandDataFassade
  *
  * Implements commandstorage for later execution
  */
-class ContentRepositoryCommandStack implements ICommandDataFassade
+class ContentRepositoryCommandStack implements ICommandDataFacade
 {
     /**
      * @var SplObjectStorage
@@ -371,7 +371,7 @@ class AdobeCQAdapter implements IContentRepository
  *
  * Concrete implementation of generic command
  */
-class ContentRepositoryPostFileListCommand implements IRepositioryCommand, ICommandDataFassade
+class ContentRepositoryPostFileListCommand implements IRepositioryCommand, ICommandDataFacade
 {
     private $_id = __METHOD__;
 
@@ -457,12 +457,12 @@ class ContentRepositoryPostFileListCommand implements IRepositioryCommand, IComm
 }
 
 /**
- * Class AdobeCQ5Fassade
+ * Class AdobeCQ5Facade
  *
  * Implements a simplification to handle AdobeCQ client commands
  *
  */
-class ContentRepositoryFassade
+class ContentRepositoryFacade
 {
     /**
      * @var IContentRepository
@@ -618,9 +618,9 @@ $dependencies->attach(new Logger(), 'logger');
 $dependencies->attach(new Mailer(), 'mailer');
 
 
-$adobeCQFassade = new ContentRepositoryFassade(new AdobeCQAdapter($dependencies), $dependencies);
+$adobeCQFacade = new ContentRepositoryFacade(new AdobeCQAdapter($dependencies), $dependencies);
 
-$adobeCQFassade->postFileList($fileObjectList)->execute();
+$adobeCQFacade->postFileList($fileObjectList)->execute();
 
 
 

@@ -17,7 +17,11 @@ Decoratorpattern:
   You can setup a decoratorchain on wich you can modify the modified object again. But keep an eye on th first object. This passtern likes to change the 
   base object! 
 
+Proxypattern:
+- use this pattern to reduce serverload on heavy objects like indesignfiles from 1GB Imagedata or longrunning servicerequest
+  The baseObjects gets only loaded 1 times. In reallife the initial load is asyncron via messaging
 
+ 
   
   
   

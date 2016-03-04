@@ -24,33 +24,38 @@ interface IProxy
 class AdobeIndesign implements IProxy
 {
 
+    /**
+     * Contains fileObject metadata
+     *
+     * @var IndesignFileObject
+     */
     protected $_fileObject;
 
-    protected $_isLoaded=false;
-
+    /**
+     * Loads object and creates proxydata
+     *
+     * @param IndesignFileObject $fileObject
+     */
     public function __construct(IndesignFileObject $fileObject)
     {
         $this->_fileObject = $fileObject;
 
         $this->load($fileObject);
+
+        //create fake object data
+        $this->_createProxyImage();
     }
 
     /**
-    * load the heavy file from disk
+     * load the heavy file from disk
      */
     public function load()
     {
         echo PHP_EOL . 'heavyfileobject: '. $this->_fileObject->getUuid(). ' is loaded from service';
-
-        //create fake object data
-        $this->_createProxyImage();
-
-        //create xml abstraction
-        $this->_createXmlReprents();
     }
 
     /**
-     * Creates handsome proxyimage
+     * Creates proxyimage to reduce runtime
      */
     protected function _createProxyImage()
     {
@@ -59,18 +64,10 @@ class AdobeIndesign implements IProxy
         echo PHP_EOL . 'proxy image created: ' . $this->_fileObject->getProxyImage();
     }
 
-    /**
-     * Creates handsome abstract dataobject
-     */
-    protected function _createXmlReprents()
-    {
-        $this->_fileObject->setXmlRepresentation('/var/storage/assetId.xml');
-
-        echo PHP_EOL . 'xml abstraction created: ' . $this->_fileObject->getProxyImage();
-    }
 
     /**
-     * Renders baseobject
+     * Renders original baseobject
+     *
      * @return mixed
      */
     public function render()
@@ -79,7 +76,7 @@ class AdobeIndesign implements IProxy
     }
 
     /**
-     * export baseObject
+     * export original baseObject
      */
     public function export()
     {
@@ -88,19 +85,19 @@ class AdobeIndesign implements IProxy
 }
 
 /**
- * Class AdobeCQObserver
+ * Class proxyobject
  */
 class AdobeIndesignProxy implements IProxy
 {
     public $_fileObject;
 
     /**
-     * @var original baseObject
+     * @var IndesignFileObject
      */
     protected $_baseObject = null;
 
     /**
-     * Save Metdata fileobjects and loads baseobject initial
+     * Create original baseObject
      *
      * @param IndesignFileObject $fileObject
      */
@@ -108,7 +105,6 @@ class AdobeIndesignProxy implements IProxy
     {
         $this->_fileObject = $fileObject;
 
-        //initial load of heavy object
         if(null === $this->_baseObject)
         {
             $this->_baseObject = new AdobeIndesign($fileObject);
@@ -116,7 +112,7 @@ class AdobeIndesignProxy implements IProxy
     }
 
     /**
-     * Renders fakeobject
+     * Renders proxyimage
      */
     public function render()
     {
@@ -124,7 +120,7 @@ class AdobeIndesignProxy implements IProxy
     }
 
     /**
-     * Loads abstract reprensentation
+     * Loads abstract fileobject data representation
      */
     public function load()
     {
@@ -132,8 +128,7 @@ class AdobeIndesignProxy implements IProxy
     }
 
     /**
-     * Exports baseObject
-     *
+     * Exports original baseObject
      */
     public function export()
     {
@@ -142,7 +137,9 @@ class AdobeIndesignProxy implements IProxy
 }
 
 
-
+/**
+ * Class IndesignFileObject. A metadata representation
+ */
 class IndesignFileObject
 {
 
@@ -194,8 +191,6 @@ class IndesignFileObject
         $this->_xmlRepresentation = $xmlRepresentation;
     }
 
-
-
     /**
      * @return string
      */
@@ -243,7 +238,6 @@ class IndesignFileObject
     {
         $this->_name = $name;
     }
-
 
     /**
      * @param mixed $type

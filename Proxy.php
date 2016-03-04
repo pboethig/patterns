@@ -1,13 +1,12 @@
 <?php
 
 /**
- * Define a list with Obsering AsssetRepositories
- * This list of systems gets informed, when a new asset is available or i changed
+ * Use this pattern to handle huge objects during runtime
  */
 
 
 /**
- * Interface IObserver
+ * Interface IProxy
  */
 interface IProxy
 {
@@ -20,7 +19,7 @@ interface IProxy
 
 
 /**
- * Class AdobeCQObserver
+ * Class AdobeIndesign
  */
 class AdobeIndesign implements IProxy
 {

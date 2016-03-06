@@ -4,7 +4,6 @@
  * Use this pattern to handle huge objects during runtime
  */
 
-
 /**
  * Interface IProxy
  */
@@ -16,7 +15,6 @@ interface IProxy
 
     public function export();
 }
-
 
 /**
  * Class AdobeIndesign

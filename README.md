@@ -21,6 +21,16 @@ Proxypattern:
 - use this pattern to reduce serverload on heavy objects like indesignfiles from 1GB Imagedata or longrunning servicerequest
   The baseObjects gets only loaded 1 times. In reallife the initial load is asyncron via messaging
 
+Delegatorpattern
+
+- Use this pattern if you want to centralize your objectcalls to onepoint, so that you dont care about wich specific object
+  can handle your request.
+ 
+  The delegator doesnt know anything about the task and who can execute it. He only ask a list with workerclient who can solve the problem.
+ 
+  In this case we have combined the delegatorpattern with a facade, to hide the delegator configuration from the programmer,
+  so that he doesnt have to now anything aboutthe workerclients
+ 
  
   
   

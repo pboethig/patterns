@@ -367,7 +367,7 @@ interface ITask
      * @param SplObjectStorage $metadataList
      * @return void
      */
-    public function setMetData(SplObjectStorage $metadataList);
+    public function setTaskMetadata(SplObjectStorage $metadataList);
 
     /**
      * Returns an object from the objectList.
@@ -666,7 +666,7 @@ class Task implements ITask
     {
         $this->setObjects($objects);
 
-        $this->setMetData($taskMetadata);
+        $this->setTaskMetadata($taskMetadata);
 
         $this->setMethodName($clientServiceMethodName);
 
@@ -716,7 +716,7 @@ class Task implements ITask
      * @param SplObjectStorage $metadataStorage
      * @return void
      */
-    public function setMetData(SplObjectStorage $metadataStorage)
+    public function setTaskMetadata(SplObjectStorage $metadataStorage)
     {
         $this->_taskMetadataStorage = $metadataStorage;
     }

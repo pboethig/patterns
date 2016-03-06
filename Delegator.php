@@ -1,12 +1,12 @@
 <?php
 /**
- * Use this pattern if you want to centralize your objectcalls to onepoint, so that you dont care about wich specific object
+ * Use this pattern if you want to centralize your objectcalls to one point, so that you don't care about which specific object
  * can handle your request.
  *
- * The delegator doesnt know anything about the task and who can execute it. He only ask a list with workerclient who can solve the problem.
+ * The delegator doesn't know anything about the task and who can execute it. He only ask a list with workerclients, who can solve your problem.
  *
  * In this case we have combined the delegatorpattern with a facade, to hide the delegator configuration from the programmer,
- * so that he doesnt have to now anything aboutthe workerclients
+ * so that he doesn't have to know anything about the workerclients
  */
 
 

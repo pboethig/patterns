@@ -69,7 +69,7 @@ interface IDelegator
 }
 
 /**
- * Main delegaterv whoch delegates tasks
+ * Main delegater which delegates tasks
  *
  * Class RepositoryDelegator
  */
@@ -130,7 +130,7 @@ class RepositoryDelegator implements IDelegator
 }
 
 /**
- * Class MarsRepositoryconvertInddToJpger
+ * Class MarsRepositoryDelegatorClient
  */
 class MarsRepositoryDelegatorClient implements IDelegatorClient
 {
@@ -145,7 +145,7 @@ class MarsRepositoryDelegatorClient implements IDelegatorClient
     protected $_task;
 
     /**
-     * Converts to jpg. Can implemenzt commandPattern
+     * Converts to swf. Could implement commandPattern
      */
     public function convertInddToSwf()
     {
@@ -223,7 +223,7 @@ class MarsRepositoryDelegatorClient implements IDelegatorClient
 
 
     /**
-     * Return true if its able to handle the fileobject
+     * Return true if it is able to handle the fileobject
      *
      * @param ITask $task
      * @return bool
@@ -259,7 +259,7 @@ class AdobeRepositoryDelegatorClient implements IDelegatorClient
     protected $_task;
 
     /**
-     * Converts to jpg. Can implemenzt commandPattern
+     * Converts to jpg. Could implement commandPattern
      */
     public function convertInddToJpg()
     {
@@ -337,7 +337,7 @@ class AdobeRepositoryDelegatorClient implements IDelegatorClient
 
 
     /**
-     * Return true if its able to handle the fileobject
+     * Return true if it is able to handle the fileobject
      *
      * @param ITask $task
      * @return bool
@@ -833,9 +833,7 @@ class Logger
 }
 
 /**
- * Imlements facadepattern to simplyfy delegationpattern
- *
- * Class DelegatorFacade
+ * Imlements facadepattern to simplify delegationpattern
  */
 class TaskDelegatorFacade
 {
@@ -843,7 +841,7 @@ class TaskDelegatorFacade
     private $_delegate;
 
     /**
-     * Simplyfies
+     * Simplifies
      *
      * @param $taskName
      * @param $taskDescription

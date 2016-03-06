@@ -36,6 +36,15 @@ interface IDelegatorClient
      * @return void
      */
     public function execute(ITask $task);
+
+    /**
+     * Each client has to set a taskresult.
+     *
+     * @param TaskResult $result
+     * @return mixed
+     */
+    public function setTaskResult(TaskResult $result);
+
 }
 
 /**
@@ -97,6 +106,8 @@ class RepositoryDelegator implements IDelegator
 
     /**
      * delegates a task to a list of registered clients
+     *
+     * @return ITask
      */
     public function delegate()
     {
@@ -108,17 +119,17 @@ class RepositoryDelegator implements IDelegator
         {
             if ($this->_delegatorClientStorage->current()->isAbleToHandle($this->_task))
             {
-                $this->_delegatorClientStorage->current()->execute($this->_task);
+                return $this->_delegatorClientStorage->current()->execute($this->_task);
             }
 
             $this->_delegatorClientStorage->next();
         }
+
+        throw new InvalidArgumentException('no client could solve task:' . $this->_task->getMethodName());
     }
 }
 
 /**
- * Now we can extend the decorator to modify the originally object
- *
  * Class MarsRepositoryconvertInddToJpger
  */
 class MarsRepositoryDelegatorClient implements IDelegatorClient
@@ -129,21 +140,63 @@ class MarsRepositoryDelegatorClient implements IDelegatorClient
     protected $_fileObjectList;
 
     /**
+     * @var ITask
+     */
+    protected $_task;
+
+    /**
      * Converts to jpg. Can implemenzt commandPattern
      */
     public function convertInddToSwf()
     {
         $this->_fileObjectList->rewind();
 
+        $paths = array();
+
+        $errors = array();
+
         while($this->_fileObjectList->valid())
         {
-            Logger::log(get_class($this) . PHP_EOL . ' => ' . __FUNCTION__ . ' => ' . $this->_fileObjectList->current()->getName() . ' succcessfully converted ');
+            try
+            {
+                $msg = get_class($this) . PHP_EOL . ' => ' . __FUNCTION__ . ' => ' . $this->_fileObjectList->current()->getName() . ' succcessfully converted ';
+
+                $paths[$this->_fileObjectList->current()->getName()] = 'path/to/jpg';
+
+                Logger::log($msg);
+            }
+            catch (Exception $e)
+            {
+                $errors[] = $e;
+
+                Logger::log($e->getMessage().$e->getTraceAsString());
+            }
 
             $this->_fileObjectList->next();
         }
 
-        return 'path/to/jpg';
+        $taskResult = new TaskResult($this->_task);
+
+        $taskResult->setResult(array($paths));
+
+        $taskResult->setMessage($msg);
+
+        $taskResult->setError(null);
+
+        $this->setTaskResult($taskResult);
+
+        return $taskResult;
     }
+
+    /**
+     * @param TaskResult $result
+     * @return void
+     */
+    public function setTaskResult(TaskResult $result)
+    {
+        $this->_task->setTaskResult($result);
+    }
+
 
     /**
      * Executes delegated method
@@ -152,9 +205,11 @@ class MarsRepositoryDelegatorClient implements IDelegatorClient
      */
     public function execute(ITask $task)
     {
+        $this->_task = $task;
+
         $this->setObjects($task->getObjects());
 
-        $this->{$task->getMethodName()}();
+        return $this->{$task->getMethodName()}();
     }
 
     /**
@@ -191,11 +246,6 @@ class MarsRepositoryDelegatorClient implements IDelegatorClient
 
 
 
-/**
- * Now we can extend the decorator to modify the originally object
- *
- * Class MarsRepositoryconvertInddToJpger
- */
 class AdobeRepositoryDelegatorClient implements IDelegatorClient
 {
     /**
@@ -204,21 +254,63 @@ class AdobeRepositoryDelegatorClient implements IDelegatorClient
     protected $_fileObjectList;
 
     /**
+     * @var ITask
+     */
+    protected $_task;
+
+    /**
      * Converts to jpg. Can implemenzt commandPattern
      */
     public function convertInddToJpg()
     {
         $this->_fileObjectList->rewind();
 
+        $paths = array();
+
+        $errors = array();
+
         while($this->_fileObjectList->valid())
         {
-            Logger::log(get_class($this) . PHP_EOL . ' => ' . __FUNCTION__ . ' => ' . $this->_fileObjectList->current()->getName() . ' succcessfully converted ');
+            try
+            {
+                $msg = get_class($this) . PHP_EOL . ' => ' . __FUNCTION__ . ' => ' . $this->_fileObjectList->current()->getName() . ' succcessfully converted ';
+
+                $paths[$this->_fileObjectList->current()->getName()] = 'path/to/jpg';
+
+                Logger::log($msg);
+            }
+            catch (Exception $e)
+            {
+                $errors[] = $e;
+
+                Logger::log($e->getMessage().$e->getTraceAsString());
+            }
 
             $this->_fileObjectList->next();
         }
 
-        return 'path/to/jpg';
+        $taskResult = new TaskResult($this->_task);
+
+        $taskResult->setTaskResult(array($paths));
+
+        $taskResult->setMessage($msg);
+
+        $taskResult->setError(null);
+
+        $this->setTaskResult($taskResult);
+
+        return $taskResult;
     }
+
+    /**
+     * @param TaskResult $result
+     * @return void
+     */
+    public function setTaskResult(TaskResult $result)
+    {
+        $this->_task->setTaskResult($result);
+    }
+
 
     /**
      * Executes delegated method
@@ -227,9 +319,11 @@ class AdobeRepositoryDelegatorClient implements IDelegatorClient
      */
     public function execute(ITask $task)
     {
+        $this->_task = $task;
+
         $this->setObjects($task->getObjects());
 
-        $this->{$task->getMethodName()}();
+        return $this->{$task->getMethodName()}();
     }
 
     /**
@@ -242,6 +336,12 @@ class AdobeRepositoryDelegatorClient implements IDelegatorClient
     }
 
 
+    /**
+     * Return true if its able to handle the fileobject
+     *
+     * @param ITask $task
+     * @return bool
+     */
     public function isAbleToHandle(ITask $task)
     {
         if(!method_exists($this, $task->getMethodName())){
@@ -302,14 +402,115 @@ interface ITask
      * @return String
      */
     public function getMethodName();
+
+    /**
+     * @return mixed
+     */
+    public function getTaskResult();
+
+    /**
+     * @param TaskResult $result
+     * @return mixed
+     */
+    public function setTaskResult(TaskResult $result);
+
+    /**
+     * @return mixed
+     */
+    public function setUuid($uuid);
+
+    /**
+     * @return mixed
+     */
+    public function getUuid();
 }
 
-
 /**
- * Minumum contract on a fileobject
- *
- * Interface IFileObject
+ * Class TaskResult
  */
+class TaskResult
+{
+    private $_result;
+
+    private $_message;
+
+    private $_error;
+
+    private $_uuid;
+
+    /**
+     * @var ITask
+     */
+    private $_task;
+
+    public function __construct(ITask $task)
+    {
+        $this->setUuid($task->getUuid());
+
+        $this->_task = $task;
+    }
+
+
+
+    /**
+     * @param mixed $result
+     */
+    public function setTaskResult($result)
+    {
+        $this->_result = $result;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMessage()
+    {
+        return $this->_message;
+    }
+
+    /**
+     * @param mixed $message
+     */
+    public function setMessage($message)
+    {
+        $this->_message = $message;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getError()
+    {
+        return $this->_error;
+    }
+
+    /**
+     * @param mixed $error
+     */
+    public function setError($error)
+    {
+        $this->_error = $error;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUuid()
+    {
+        return $this->_uuid;
+    }
+
+    /**
+     * @param mixed $uuid
+     */
+    public function setUuid($uuid)
+    {
+        $this->_uuid = $uuid;
+    }
+
+
+}
+
 interface IFileObject
 {
     /**
@@ -444,6 +645,15 @@ class Task implements ITask
      */
     private $_methodName;
 
+    /**
+     * @var TaskResult
+     */
+    private $_taskResult;
+
+    /**
+     * @var string
+     */
+    private $_uuid;
 
     /**
      * Sets a new task.
@@ -459,6 +669,24 @@ class Task implements ITask
         $this->setMetData($taskMetadata);
 
         $this->setMethodName($clientServiceMethodName);
+
+        $this->setUuid(uniqid());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function setUuid($uuid)
+    {
+        $this->_uuid = $uuid;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUuid()
+    {
+        return $this->_uuid;
     }
 
     /**
@@ -519,6 +747,23 @@ class Task implements ITask
     public function getMethodName()
     {
         return $this->_methodName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTaskResult()
+    {
+        return $this->_taskResult;
+    }
+
+    /**
+     * @param TaskResult $result
+     * @return mixed
+     */
+    public function setTaskResult(TaskResult $result)
+    {
+        $this->_taskResult = $result;
     }
 }
 
@@ -595,6 +840,8 @@ class Logger
 class TaskDelegatorFacade
 {
 
+    private $_delegate;
+
     /**
      * Simplyfies
      *
@@ -621,16 +868,18 @@ class TaskDelegatorFacade
         /**
          * Prepare the delegator
          */
-        $delegator = new RepositoryDelegator($task);
+        $this->_delegator = new RepositoryDelegator($task);
 
         //add marsclient to delegatorclientlist
-        $delegator->attach(new MarsRepositoryDelegatorClient($fileObjectList));
+        $this->_delegator->attach(new MarsRepositoryDelegatorClient($fileObjectList));
 
         //add adobeclient to delegatorclientlist
-        $delegator->attach(new AdobeRepositoryDelegatorClient($fileObjectList));
+        $this->_delegator->attach(new AdobeRepositoryDelegatorClient($fileObjectList));
+    }
 
-        //now tell the delegator that he can do his work
-        $delegator->delegate();
+    public function delegate()
+    {
+        return $this->_delegator->delegate();
     }
 }
 
@@ -646,8 +895,12 @@ $fileObjectList = new SplObjectStorage();
 $fileObjectList->attach($fileObject);
 
 //start the task now on a taskFacade
-$delegatorFacade = new TaskDelegatorFacade('Formatconvertion task','Convert-task for a client', 'convertInddToJpg', $fileObjectList);
+$delegator = new TaskDelegatorFacade('Formatconvertion task','Convert-task for a client', 'convertInddToJpg', $fileObjectList);
 
+$taskResult = $delegator->delegate();
 
+echo PHP_EOL . ' your result: '.PHP_EOL;
+
+var_dump($taskResult);
 
 echo PHP_EOL . ' done...'.PHP_EOL;

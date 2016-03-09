@@ -828,7 +828,7 @@ class Logger
 {
     public static function log($message)
     {
-        echo $message . PHP_EOL;
+        echo PHP_EOL . $message . PHP_EOL;
     }
 }
 

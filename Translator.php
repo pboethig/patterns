@@ -26,9 +26,9 @@ interface IMarkupTranslator
  */
 interface IFieldRuleInterface
 {
-    public function __construct(Frame $frame, IEditorProxy $editorProxy, SplObjectStorage $dependencyStorage);
+    public function __construct(Frame $frame, IProtectionEditorProxy $ProtectionEditorProxy, SplObjectStorage $dependencyStorage);
 
-    public function setEditorProxy(IEditorProxy $editorProxy);
+    public function setProtectionEditorProxy(IProtectionEditorProxy $ProtectionEditorProxy);
 
     public function setDependencyStorage(SplObjectStorage $dependencyStorage);
 
@@ -60,7 +60,7 @@ interface IContent
 }
 
 
-interface IEditorProxy
+interface IProtectionEditorProxy
 {
     public function getPropertyAcl();
 
@@ -68,9 +68,9 @@ interface IEditorProxy
 }
 
 /**
- * Class EditorProxy
+ * Class ProtectionEditorProxy
  */
-class EditorProxy implements IEditorProxy
+class ProtectionEditorProxy implements IProtectionEditorProxy
 {
 
     public function __construct(SplObjectStorage $acl)
@@ -249,15 +249,15 @@ class IbramsTaggedTextFieldRule implements IFieldRuleInterface
     private $_defaultContent;
 
     /**
-     * @var IEditorProxy
+     * @var IProtectionEditorProxy
      */
-    private $_editorProxy;
+    private $_ProtectionEditorProxy;
 
-    public function __construct(Frame $frame, IEditorProxy $editorProxy, SplObjectStorage $dependencyStorage)
+    public function __construct(Frame $frame, IProtectionEditorProxy $ProtectionEditorProxy, SplObjectStorage $dependencyStorage)
     {
         $this->_frame = $frame;
 
-        $this->setEditorProxy($editorProxy);
+        $this->setProtectionEditorProxy($ProtectionEditorProxy);
 
         $this->setDependencyStorage($dependencyStorage);
 
@@ -266,9 +266,9 @@ class IbramsTaggedTextFieldRule implements IFieldRuleInterface
         $defaultContent = $this->setDefaultContent($this->query($this->_frame));
     }
 
-    public function setEditorProxy(IEditorProxy $editorProxy)
+    public function setProtectionEditorProxy(IProtectionEditorProxy $ProtectionEditorProxy)
     {
-        $this->_editorProxy = $editorProxy;
+        $this->_ProtectionEditorProxy = $ProtectionEditorProxy;
     }
 
 
@@ -634,4 +634,4 @@ $dependencies->attach(new Logger(), 'logger');
 
 $acl = new PropertyAcl(new SplObjectStorage());
 
-$fieldRuleObject = new IbramsTaggedTextFieldRule(new Frame(), new EditorProxy($acl->getStorage()), $dependencies);
+$fieldRuleObject = new IbramsTaggedTextFieldRule(new Frame(), new ProtectionEditorProxy($acl->getStorage()), $dependencies);
